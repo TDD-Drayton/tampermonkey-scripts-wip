@@ -13,42 +13,33 @@
 
     // Your code here...
   const saveSelectedTextToFile = (selectedText) => {
-    const fileName = selectedText.substring(0, 30) || 'file';
-    const fileCount = document.querySelectorAll(`a[download^="${fileName}"]`).length + 1;
-    const finalFileName = fileCount > 1 ? `${fileName}-${fileCount}.txt` : `${fileName}.txt`;
-    const blob = new Blob([selectedText], {type: 'text/plain'});
-    const url = URL.createObjectURL(blob);
+  const fileName = selectedText.substring(0, 30) || 'file';
+  const fileCount = document.querySelectorAll(`a[download^="${fileName}"]`).length + 1;
+  const finalFileName = fileCount > 1 ? `${fileName}-${fileCount}.txt` : `${fileName}.txt`;
+  const blob = new Blob([selectedText], {type: 'text/plain'});
+  const url = URL.createObjectURL(blob);
 
-    const a = document.createElement('a');
-    a.download = finalFileName;
-    a.href = url;
-    a.style.display = 'none';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  };
+  const a = document.createElement('a');
+  a.download = finalFileName;
+  a.href = url;
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+};
 
-  function addToContextMenu() {
-    const selection = window.getSelection().toString().trim();
-    if (selection) {
-      const saveSelectedTextMenuItem = document.createElement('div');
-      saveSelectedTextMenuItem.textContent = 'Save Selected Text as File';
-      saveSelectedTextMenuItem.style.cssText = 'padding: 5px; cursor: pointer; background-color: #fff;';
+document.addEventListener('contextmenu', (event) => {
+  const selection = window.getSelection().toString().trim();
+  if (selection) {
+    const saveSelectedTextMenuItem = document.createElement('div');
+    saveSelectedTextMenuItem.textContent = 'Save Selected Text as File';
+    saveSelectedTextMenuItem.style.cssText = 'padding: 5px; cursor: pointer; background-color: #fff;';
 
-      saveSelectedTextMenuItem.addEventListener('click', () => {
-        saveSelectedTextToFile(selection);
-      });
+    saveSelectedTextMenuItem.addEventListener('click', () => {
+      saveSelectedTextToFile(selection);
+    });
 
-      const contextMenu = document.querySelector('.context-menu');
-      if (contextMenu) {
-        contextMenu.appendChild(saveSelectedTextMenuItem);
-      }
-    }
-  }
-
-  document.addEventListener('contextmenu', (event) => {
     const contextMenu = document.createElement('div');
-    contextMenu.className = 'context-menu';
     contextMenu.style.cssText = `
       position: absolute;
       background-color: #fff;
@@ -58,16 +49,17 @@
       z-index: 2147483647;
       max-width: 200px;
       padding: 5px;
+      margin-top: -50px;
     `;
+    contextMenu.appendChild(saveSelectedTextMenuItem);
 
     contextMenu.style.top = `${event.pageY}px`;
     contextMenu.style.left = `${event.pageX}px`;
     document.body.appendChild(contextMenu);
 
-    addToContextMenu();
-
     document.addEventListener('click', () => {
       document.body.removeChild(contextMenu);
     }, { once: true });
-  });
+  }
+});
 })();
